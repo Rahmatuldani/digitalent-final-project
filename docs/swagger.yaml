@@ -1,0 +1,56 @@
+basePath: /api/v1
+definitions:
+  response.TokenJWT:
+    properties:
+      token:
+        type: string
+    type: object
+  response.UserRegRes:
+    properties:
+      age:
+        type: integer
+      email:
+        type: string
+      id:
+        type: integer
+      username:
+        type: string
+    type: object
+host: localhost:5000
+info:
+  contact: {}
+  description: Server API for MyGram app
+  title: MyGram API
+  version: "1.0"
+paths:
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: User login
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.TokenJWT'
+      summary: User login
+      tags:
+      - users
+  /users/register:
+    post:
+      consumes:
+      - application/json
+      description: User register
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UserRegRes'
+      summary: User register
+      tags:
+      - users
+swagger: "2.0"
