@@ -18,6 +18,7 @@ import (
 
 func main() {
 	docs.SwaggerInfo.BasePath = "/api/v1"
+	config.DBConnect()
 	db := config.GetDB()
 	validate := validator.New()
 	
