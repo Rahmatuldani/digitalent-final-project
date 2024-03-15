@@ -1,6 +1,8 @@
 package models
 
 import (
+	"errors"
+
 	"github.com/Rahmatuldani/digitalent-project/data/request"
 	"github.com/Rahmatuldani/digitalent-project/helper"
 	"gorm.io/gorm"
@@ -8,14 +10,14 @@ import (
 
 type User struct {
 	gorm.Model
-	Username	string		`json:"username" gorm:"not null;varchar(191);unique" validate:"unique,required"`
-	Email		string		`json:"email" gorm:"not null;varchar(191);unique" validate:"email,unique,required"`
-	Password	string		`json:"password" gorm:"not null;varchar(191)" validate:"required,min=6"`
+	Username	string		`json:"username" gorm:"not null;type:varchar(191);unique" validate:"unique,required"`
+	Email		string		`json:"email" gorm:"not null;type:varchar(191);unique" validate:"email,unique,required"`
+	Password	string		`json:"password" gorm:"not null;type:varchar(191)" validate:"required,min=6"`
 	Age			uint8		`json:"age" gorm:"not null" validate:"required,min=8"`
 }
 
 type UsersInterface interface {
-	Login() User
+	Login(data request.UserLogin) (User, error)
 	Register(data request.UserRegReq) (User, error)
 }
 
@@ -28,10 +30,18 @@ func UsersModel(Db *gorm.DB) UsersInterface {
 	return &UserImpl{Db: Db}
 }
 
-func (u *UserImpl) Login() User {
+func (u *UserImpl) Login(data request.UserLogin) (User, error) {
 	var user User
+	err := u.Db.Where("email = ?", data.Email).First(&user).Error
+	if err != nil {
+		return User{}, errors.New("user not found")
+	}
 
-	return user
+	if !helper.ComparePassword(user.Password, data.Password) {
+		return User{}, errors.New("password did not match")
+	}
+
+	return user, nil
 }
 
 func (u *UserImpl) Register(data request.UserRegReq) (User, error) {
