@@ -19,6 +19,8 @@ type User struct {
 type UsersInterface interface {
 	Login(data request.UserLogin) (User, error)
 	Register(data request.UserRegReq) (User, error)
+	Delete(id uint8) error
+	CheckUser(id uint8) bool
 }
 
 type UserImpl struct {
@@ -60,4 +62,23 @@ func (u *UserImpl) Register(data request.UserRegReq) (User, error) {
 		return User{}, err
 	}
 	return user, nil
+}
+
+
+func (u *UserImpl) Delete(id uint8) error {
+	err := u.Db.First(&User{}, id).Error
+	if err != nil {
+		return err
+	}
+	err = u.Db.Unscoped().Delete(&User{}, id).Error
+	if err != nil {
+		return err
+	}
+	return nil 
+} 
+
+func (u *UserImpl) CheckUser(id uint8) bool {
+	var user User
+	err := u.Db.Where("id = ?", id).First(&user).Error
+	return err == nil
 }

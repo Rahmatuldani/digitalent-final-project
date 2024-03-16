@@ -3,23 +3,27 @@ package controllers
 import (
 	"encoding/json"
 	"errors"
+	"strconv"
+
+	// "strconv"
 
 	"github.com/Rahmatuldani/digitalent-project/data/request"
 	"github.com/Rahmatuldani/digitalent-project/data/response"
 	"github.com/Rahmatuldani/digitalent-project/helper"
 	"github.com/Rahmatuldani/digitalent-project/models"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )
 
 type UsersControllerStruct struct {
-	model models.UsersInterface
+	model    models.UsersInterface
 	validate *validator.Validate
 }
 
 func UsersController(model models.UsersInterface, v *validator.Validate) *UsersControllerStruct {
 	return &UsersControllerStruct{
-		model: model,
+		model:    model,
 		validate: v,
 	}
 }
@@ -38,28 +42,28 @@ func UsersController(model models.UsersInterface, v *validator.Validate) *UsersC
 // @Router /users/login [post]
 func (m *UsersControllerStruct) Login(ctx *gin.Context) {
 	var req request.UserLogin
-	
-	if err := ctx.ShouldBindJSON(&req) ;err != nil {
+
+	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(400, response.ErrorResponse{
 			Message: "Can't Bind JSON",
-			Error: err.Error(),
+			Error:   err.Error(),
 		})
 		return
 	}
-	
+
 	if err := m.validate.Struct(&req); err != nil {
 		ctx.JSON(400, response.ErrorResponse{
 			Message: "JSON does not match the request",
-			Error: err.Error(),
+			Error:   err.Error(),
 		})
 		return
 	}
-	
+
 	user, err := m.model.Login(req)
 	if err != nil {
 		ctx.JSON(500, response.ErrorResponse{
 			Message: "Login failed",
-			Error: err.Error(),
+			Error:   err.Error(),
 		})
 		return
 	}
@@ -67,16 +71,16 @@ func (m *UsersControllerStruct) Login(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(500, response.ErrorResponse{
 			Message: "Login failed",
-			Error: err.Error(),
+			Error:   err.Error(),
 		})
 		return
 	}
-	
+
 	token, err := helper.GenerateJWT(jsonData)
 	if err != nil {
 		ctx.JSON(500, response.ErrorResponse{
 			Message: "Login failed",
-			Error: errors.New("error generate jwt").Error(),
+			Error:   errors.New("error generate jwt").Error(),
 		})
 		return
 	}
@@ -100,10 +104,10 @@ func (m *UsersControllerStruct) Login(ctx *gin.Context) {
 func (m *UsersControllerStruct) Register(ctx *gin.Context) {
 	var req request.UserRegReq
 
-	if err := ctx.ShouldBindJSON(&req) ;err != nil {
+	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(400, response.ErrorResponse{
 			Message: "Can't Bind JSON",
-			Error: err.Error(),
+			Error:   err.Error(),
 		})
 		return
 	}
@@ -111,7 +115,7 @@ func (m *UsersControllerStruct) Register(ctx *gin.Context) {
 	if err := m.validate.Struct(&req); err != nil {
 		ctx.JSON(400, response.ErrorResponse{
 			Message: "JSON does not match the request",
-			Error: err.Error(),
+			Error:   err.Error(),
 		})
 		return
 	}
@@ -119,14 +123,72 @@ func (m *UsersControllerStruct) Register(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(500, response.ErrorResponse{
 			Message: "Can't register user",
-			Error: err.Error(),
+			Error:   err.Error(),
 		})
 		return
 	}
 	ctx.JSON(201, response.UserRegRes{
-		Age: result.Age,
-		Email: result.Email,
-		Id: result.ID,
+		Age:      result.Age,
+		Email:    result.Email,
+		Id:       result.ID,
 		Username: result.Username,
+	})
+}
+
+// Users godoc
+// @Summary User update
+// @Schemes
+// @Description User update
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Authorization" default(Bearer <Token>)
+// @Success 200 {object} response.WebResponse
+// @Failure 400 {object} response.ErrorResponse
+// @Failure 401 {object} response.ErrorResponse
+// @Failure 404 {object} response.ErrorResponse
+// @Failure 500 {object} response.ErrorResponse
+// @Router /users [put]
+func (m *UsersControllerStruct) Update(ctx *gin.Context) {
+	userData := ctx.MustGet("userData").(jwt.MapClaims)
+	
+	ctx.JSON(200, response.WebResponse{
+		Message: userData, 
+	})
+}
+
+// Users godoc
+// @Summary User delete
+// @Schemes
+// @Description User delete
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param id path int true "Id"
+// @Success 200 {object} response.WebResponse
+// @Failure 400 {object} response.ErrorResponse
+// @Failure 404 {object} response.ErrorResponse
+// @Failure 500 {object} response.ErrorResponse
+// @Router /users/{id} [delete]
+func (m *UsersControllerStruct) Delete(ctx *gin.Context) {
+	id := ctx.Param("id")
+	aid, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		ctx.JSON(400, response.ErrorResponse{
+			Message: "Can't read param id",
+			Error: err.Error(),
+		})
+		return
+	}
+	err = m.model.Delete(uint8(aid))
+	if err != nil {
+		ctx.JSON(500, response.ErrorResponse{
+			Message: "Delete user error",
+			Error: err.Error(),
+		})
+		return
+	}
+	ctx.JSON(200, response.WebResponse{
+		Message: "Your account has been successfully deleted",
 	})
 }
