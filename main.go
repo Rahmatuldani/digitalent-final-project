@@ -26,6 +26,7 @@ func main() {
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	baseRouter := r.Group("/api/v1")
 	routers.UserRoutes(db, validate, baseRouter)
+	routers.PhotoRoutes(db, validate, baseRouter)
 	
 	r.Run(":5000")
 }

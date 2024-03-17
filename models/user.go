@@ -10,10 +10,10 @@ import (
 
 type User struct {
 	gorm.Model
-	Username	string		`json:"username" gorm:"not null;type:varchar(191);unique" validate:"unique,required"`
-	Email		string		`json:"email" gorm:"not null;type:varchar(191);unique" validate:"email,unique,required"`
-	Password	string		`json:"password" gorm:"not null;type:varchar(191)" validate:"required,min=6"`
-	Age			uint8		`json:"age" gorm:"not null" validate:"required,min=8"`
+	Username	string		`json:"username" gorm:"not null;type:varchar(191);unique"`
+	Email		string		`json:"email" gorm:"not null;type:varchar(191);unique"`
+	Password	string		`json:"password" gorm:"not null;type:varchar(191)"`
+	Age			uint8		`json:"age" gorm:"not null"`
 }
 
 type UsersInterface interface {

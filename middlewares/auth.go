@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Rahmatuldani/digitalent-project/data/response"
 	"github.com/Rahmatuldani/digitalent-project/helper"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -15,9 +16,9 @@ func Authentication() gin.HandlerFunc {
 		_ = verifyToken
 
 		if err != nil {
-			ctx.JSON(401, gin.H{
-				"message": "Unauthorized",
-				"error": err.Error(),
+			ctx.JSON(401, response.ErrorResponse{
+				Message: "Unauthorized",
+				Error: err.Error(),
 			})
 			return
 		}
@@ -28,13 +29,13 @@ func Authentication() gin.HandlerFunc {
 		
 		exp := token["exp"].(float64)
 		if float64(time.Now().Unix()) > exp {
-			ctx.JSON(500, gin.H{
-				"message": "Unauthorized",
-				"error": "token expired",
+			ctx.JSON(500, response.ErrorResponse{
+				Message: "Unauthorized",
+				Error: "token expired",
 			})
 			return
 		}
 		ctx.Set("userId", aid)
-		ctx.Next()
+		CheckUser(ctx)
 	}
 }

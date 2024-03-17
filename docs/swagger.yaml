@@ -1,5 +1,14 @@
 basePath: /api/v1
 definitions:
+  request.PhotoPostReq:
+    properties:
+      caption:
+        type: string
+      photo_url:
+        type: string
+      title:
+        type: string
+    type: object
   request.UserLogin:
     properties:
       email:
@@ -46,9 +55,50 @@ definitions:
       message:
         type: string
     type: object
+  response.PhotoPostRes:
+    properties:
+      caption:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      photo_url:
+        type: string
+      title:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  response.PhotosGetRes:
+    properties:
+      User:
+        $ref: '#/definitions/response.UserPhotos'
+      caption:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      photo_url:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
   response.TokenJWT:
     properties:
       token:
+        type: string
+    type: object
+  response.UserPhotos:
+    properties:
+      email:
+        type: string
+      username:
         type: string
     type: object
   response.UserRegRes:
@@ -73,6 +123,63 @@ info:
   title: MyGram API
   version: "1.0"
 paths:
+  /photos:
+    get:
+      consumes:
+      - application/json
+      description: Get all photos
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.PhotosGetRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Get all photos
+      tags:
+      - photos
+    post:
+      consumes:
+      - application/json
+      description: Post photo
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Bearer
+        required: true
+        type: string
+      - description: Request Body
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.PhotoPostReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.PhotoPostRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Post photo
+      tags:
+      - photos
   /users/{id}:
     delete:
       consumes:
