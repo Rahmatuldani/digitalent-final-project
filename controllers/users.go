@@ -1,17 +1,13 @@
 package controllers
 
 import (
-	"encoding/json"
 	"errors"
 	"strconv"
-
-	// "strconv"
 
 	"github.com/Rahmatuldani/digitalent-project/data/request"
 	"github.com/Rahmatuldani/digitalent-project/data/response"
 	"github.com/Rahmatuldani/digitalent-project/helper"
 	"github.com/Rahmatuldani/digitalent-project/models"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )
@@ -67,16 +63,8 @@ func (m *UsersControllerStruct) Login(ctx *gin.Context) {
 		})
 		return
 	}
-	jsonData, err := json.Marshal(user)
-	if err != nil {
-		ctx.JSON(500, response.ErrorResponse{
-			Message: "Login failed",
-			Error:   err.Error(),
-		})
-		return
-	}
 
-	token, err := helper.GenerateJWT(jsonData)
+	token, err := helper.GenerateJWT([]byte(strconv.FormatUint(uint64(user.ID), 10)))
 	if err != nil {
 		ctx.JSON(500, response.ErrorResponse{
 			Message: "Login failed",
@@ -142,18 +130,66 @@ func (m *UsersControllerStruct) Register(ctx *gin.Context) {
 // @Tags users
 // @Accept json
 // @Produce json
-// @Param Authorization header string true "Authorization" default(Bearer <Token>)
+// @Param Bearer header string true "Bearer Token"
+// @Param id path int true "ID"
+// @Param req body request.UserUpdateReq true "Request Body"
 // @Success 200 {object} response.WebResponse
 // @Failure 400 {object} response.ErrorResponse
 // @Failure 401 {object} response.ErrorResponse
 // @Failure 404 {object} response.ErrorResponse
 // @Failure 500 {object} response.ErrorResponse
-// @Router /users [put]
+// @Router /users/{id} [put]
 func (m *UsersControllerStruct) Update(ctx *gin.Context) {
-	userData := ctx.MustGet("userData").(jwt.MapClaims)
+	if !m.CheckUser(ctx) {
+		ctx.JSON(401, response.ErrorResponse{
+			Message: "Unauthorized",
+			Error: "User does not exist",
+		})
+		return
+	}
+
+	id := ctx.Param("id")
+	aid, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		ctx.JSON(400, response.ErrorResponse{
+			Message: "Can't read param id",
+			Error: err.Error(),
+		})
+		return
+	}
+
+	var req request.UserUpdateReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(400, response.ErrorResponse{
+			Message: "Can't Bind JSON",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	if err := m.validate.Struct(&req); err != nil {
+		ctx.JSON(400, response.ErrorResponse{
+			Message: "JSON does not match the request",
+			Error:   err.Error(),
+		})
+		return
+	}
 	
-	ctx.JSON(200, response.WebResponse{
-		Message: userData, 
+	user, err := m.model.Update(uint8(aid), req)
+	if err != nil {
+		ctx.JSON(500, response.ErrorResponse{
+			Message: "Server Error",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(200, response.UserUpdateRes{
+		Id: user.ID,
+		Email: user.Email,
+		Username: user.Username,
+		Age: user.Age,
+		UpdatedAt: user.UpdatedAt,
 	})
 }
 
@@ -164,6 +200,7 @@ func (m *UsersControllerStruct) Update(ctx *gin.Context) {
 // @Tags users
 // @Accept json
 // @Produce json
+// @Param Bearer header string true "Bearer Token"
 // @Param id path int true "Id"
 // @Success 200 {object} response.WebResponse
 // @Failure 400 {object} response.ErrorResponse
@@ -171,6 +208,13 @@ func (m *UsersControllerStruct) Update(ctx *gin.Context) {
 // @Failure 500 {object} response.ErrorResponse
 // @Router /users/{id} [delete]
 func (m *UsersControllerStruct) Delete(ctx *gin.Context) {
+	if !m.CheckUser(ctx) {
+		ctx.JSON(401, response.ErrorResponse{
+			Message: "Unauthorized",
+			Error: "User does not exist",
+		})
+		return
+	}
 	id := ctx.Param("id")
 	aid, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
@@ -191,4 +235,9 @@ func (m *UsersControllerStruct) Delete(ctx *gin.Context) {
 	ctx.JSON(200, response.WebResponse{
 		Message: "Your account has been successfully deleted",
 	})
+}
+
+func (m *UsersControllerStruct) CheckUser(ctx *gin.Context) bool {
+	id := ctx.MustGet("userId").(uint64)
+	return m.model.CheckUser(uint8(id))
 }

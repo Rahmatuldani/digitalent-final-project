@@ -29,6 +29,16 @@ definitions:
     - password
     - username
     type: object
+  request.UserUpdateReq:
+    properties:
+      email:
+        type: string
+      username:
+        type: string
+    required:
+    - email
+    - username
+    type: object
   response.ErrorResponse:
     properties:
       error:
@@ -63,50 +73,17 @@ info:
   title: MyGram API
   version: "1.0"
 paths:
-  /users:
-    put:
-      consumes:
-      - application/json
-      description: User update
-      parameters:
-      - default: Bearer <Token>
-        description: Authorization
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.WebResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/response.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/response.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/response.ErrorResponse'
-      summary: User update
-      tags:
-      - users
   /users/{id}:
     delete:
       consumes:
       - application/json
       description: User delete
       parameters:
+      - description: Bearer Token
+        in: header
+        name: Bearer
+        required: true
+        type: string
       - description: Id
         in: path
         name: id
@@ -132,6 +109,53 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorResponse'
       summary: User delete
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: User update
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Bearer
+        required: true
+        type: string
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Request Body
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.UserUpdateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: User update
       tags:
       - users
   /users/login:

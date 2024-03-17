@@ -2,23 +2,17 @@ package helper
 
 import (
 	"errors"
-	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
 
-type CustomClaims struct {
-	Data	string	`json:"data"`
-	jwt.StandardClaims
-}
-
 var secretKey = []byte("secretkey")
 
 func GenerateJWT(data []byte) (string, error) {
 	claims := jwt.MapClaims{
-		"data": string(data),
+		"id": string(data),
 		"exp": time.Now().Add(time.Minute * 30).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -32,25 +26,22 @@ func GenerateJWT(data []byte) (string, error) {
 }
 
 func VerifyToken(ctx *gin.Context) (interface{}, error) {
-	errResponse := errors.New("sign in to process")
-	headerToken := ctx.Request.Header.Get("Authorization")
-	bearer := strings.HasPrefix(headerToken, "Bearer")
+	bearer := ctx.Request.Header.Get("Bearer")
 
-	if !bearer {
-		return nil, errResponse
+	if bearer == "" {
+		return nil, errors.New("bearer token required")
 	}
 
-	stringToken :=  strings.Split(headerToken, "")[1]
-
-	token, _ := jwt.Parse(stringToken, func(t *jwt.Token) (interface{}, error) {
+	token, _ := jwt.Parse(bearer, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, errResponse
+			return nil, errors.New("cannot parse jwt token")
 		}
 		return []byte(secretKey), nil
 	})
 
 	if _, ok := token.Claims.(jwt.MapClaims); !ok && !token.Valid {
-		return nil, errResponse
+		return nil, errors.New("can't get json data or token invalid")
 	}
+
 	return token.Claims.(jwt.MapClaims), nil
 }

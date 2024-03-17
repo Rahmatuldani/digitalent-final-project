@@ -17,10 +17,11 @@ type User struct {
 }
 
 type UsersInterface interface {
-	Login(data request.UserLogin) (User, error)
-	Register(data request.UserRegReq) (User, error)
-	Delete(id uint8) error
-	CheckUser(id uint8) bool
+	Login(request.UserLogin) (User, error)
+	Register(request.UserRegReq) (User, error)
+	Update(uint8, request.UserUpdateReq) (User, error)
+	Delete(uint8) error
+	CheckUser(uint8) bool
 }
 
 type UserImpl struct {
@@ -64,6 +65,17 @@ func (u *UserImpl) Register(data request.UserRegReq) (User, error) {
 	return user, nil
 }
 
+func (u *UserImpl) Update(id uint8, data request.UserUpdateReq) (User, error) {
+	var user User
+	err := u.Db.First(&user, id).Error
+	if err != nil {
+		return User{}, err
+	}
+	user.Email = data.Email
+	user.Username = data.Username
+	u.Db.Save(&user)
+	return user, nil
+}
 
 func (u *UserImpl) Delete(id uint8) error {
 	err := u.Db.First(&User{}, id).Error
