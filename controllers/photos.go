@@ -71,14 +71,14 @@ func (m *PhotosControllerStruct) GetAllPhoto(ctx *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param Bearer header string true "Bearer Token"
-// @Param req body request.PhotoPostReq true "Request Body"
+// @Param req body request.PhotoReq true "Request Body"
 // @Success 201 {object} response.PhotoPostRes
 // @Failure 400 {object} response.ErrorResponse
 // @Failure 500 {object} response.ErrorResponse
 // @Router /photos [post]
 func (m *PhotosControllerStruct) PostPhoto(ctx *gin.Context) {
 	id := ctx.MustGet("userId").(uint64)
-	var req request.PhotoPostReq
+	var req request.PhotoReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(400, response.ErrorResponse{
 			Message: "Can't Bind JSON",
@@ -113,6 +113,66 @@ func (m *PhotosControllerStruct) PostPhoto(ctx *gin.Context) {
 }
 
 // Photos godoc
+// @Summary Update photo
+// @Schemes
+// @Description Update photo
+// @Tags photos
+// @Accept json
+// @Produce json
+// @Param Bearer header string true "Bearer Token"
+// @Param id path int true "ID"
+// @Param req body request.PhotoReq true "Request Body"
+// @Success 200 {object} response.PhotoUpdateRes
+// @Failure 400 {object} response.ErrorResponse
+// @Failure 401 {object} response.ErrorResponse
+// @Failure 500 {object} response.ErrorResponse
+// @Router /photos/{id} [put]
+func (m *PhotosControllerStruct) UpdatePhoto(ctx *gin.Context) {
+	userId := ctx.MustGet("userId").(uint64)
+	id := ctx.Param("id")
+	aid, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		ctx.JSON(400, response.ErrorResponse{
+			Message: "Can't read param id",
+			Error: err.Error(),
+		})
+		return
+	}
+	var req request.PhotoReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(400, response.ErrorResponse{
+			Message: "Can't Bind JSON",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	if err := m.validate.Struct(&req); err != nil {
+		ctx.JSON(400, response.ErrorResponse{
+			Message: "JSON does not match the request",
+			Error:   err.Error(),
+		})
+		return
+	}
+	result, err := m.model.Update(uint(userId), uint(aid), req)
+	if err != nil {
+		ctx.JSON(500, response.ErrorResponse{
+			Message: "Update photo error",
+			Error: err.Error(),
+		})
+		return
+	}
+	ctx.JSON(200, response.PhotoUpdateRes{
+		Id: result.ID,
+		Title: result.Title,
+		Caption: result.Caption,
+		PhotoUrl: result.PhotoUrl,
+		UserId: result.UserId,
+		UpdatedAt: result.UpdatedAt,
+	})
+}
+
+// Photos godoc
 // @Summary Delete photo
 // @Schemes
 // @Description Delete photo
@@ -127,6 +187,7 @@ func (m *PhotosControllerStruct) PostPhoto(ctx *gin.Context) {
 // @Failure 500 {object} response.ErrorResponse
 // @Router /photos/{id} [delete]
 func (m *PhotosControllerStruct) DeletePhoto(ctx *gin.Context) {
+	userId := ctx.MustGet("userId").(uint64)
 	id := ctx.Param("id")
 	aid, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
@@ -136,7 +197,7 @@ func (m *PhotosControllerStruct) DeletePhoto(ctx *gin.Context) {
 		})
 		return
 	}
-	if err := m.model.Delete(uint(aid)); err != nil {
+	if err := m.model.Delete(uint(userId), uint(aid)); err != nil {
 		ctx.JSON(500, response.ErrorResponse{
 			Message: "Delete photo error",
 			Error: err.Error(),

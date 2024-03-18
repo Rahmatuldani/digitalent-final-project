@@ -18,8 +18,9 @@ type Photo struct {
 
 type PhotosInterface interface {
 	GetPhotos() ([]Photo, error)
-	PostPhoto(uint, request.PhotoPostReq) (Photo, error)
-	Delete(uint) error
+	PostPhoto(uint, request.PhotoReq) (Photo, error)
+	Update(uint, uint, request.PhotoReq) (Photo, error)
+	Delete(uint, uint) error
 }
 
 type PhotoImpl struct {
@@ -40,7 +41,7 @@ func (p *PhotoImpl) GetPhotos() ([]Photo, error) {
 	return photos, nil
 }
 
-func (p *PhotoImpl) PostPhoto(id uint, data request.PhotoPostReq) (Photo, error) {
+func (p *PhotoImpl) PostPhoto(id uint, data request.PhotoReq) (Photo, error) {
 	photo := Photo{
 		Title: data.Title,
 		Caption: data.Caption,
@@ -54,9 +55,31 @@ func (p *PhotoImpl) PostPhoto(id uint, data request.PhotoPostReq) (Photo, error)
 	return photo, nil
 }
 
-func (p *PhotoImpl) Delete(id uint) error {
-	if err := p.Db.First(&Photo{}, id).Error; err != nil {
+func (p *PhotoImpl) Update(user, id uint, data request.PhotoReq) (Photo, error) {
+	var photo Photo
+
+	if err := p.Db.First(&photo, id).Error; err != nil {
+		return Photo{}, errors.New("photo not found")
+	}
+
+	if user != photo.UserId {
+		return Photo{}, errors.New("can't update photos that aren't yours")
+	}
+	photo.Title = data.Title
+	photo.Caption = data.Caption
+	photo.PhotoUrl = data.PhotoUrl
+	p.Db.Save(&photo)
+
+	return photo, nil
+}
+
+func (p *PhotoImpl) Delete(user, id uint) error {
+	var photo Photo
+	if err := p.Db.First(&photo, id).Error; err != nil {
 		return errors.New("photo not found")
+	}
+	if user != photo.UserId {
+		return errors.New("can't delete photos that aren't yours")
 	}
 	if err := p.Db.Unscoped().Delete(&Photo{}, id).Error; err != nil {
 		return err

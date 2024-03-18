@@ -1,6 +1,6 @@
 basePath: /api/v1
 definitions:
-  request.PhotoPostReq:
+  request.PhotoReq:
     properties:
       caption:
         type: string
@@ -8,6 +8,10 @@ definitions:
         type: string
       title:
         type: string
+    required:
+    - caption
+    - photo_url
+    - title
     type: object
   request.UserLogin:
     properties:
@@ -66,6 +70,21 @@ definitions:
       photo_url:
         type: string
       title:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  response.PhotoUpdateRes:
+    properties:
+      caption:
+        type: string
+      id:
+        type: integer
+      photo_url:
+        type: string
+      title:
+        type: string
+      updated_at:
         type: string
       user_id:
         type: integer
@@ -167,7 +186,7 @@ paths:
         name: req
         required: true
         schema:
-          $ref: '#/definitions/request.PhotoPostReq'
+          $ref: '#/definitions/request.PhotoReq'
       produces:
       - application/json
       responses:
@@ -222,6 +241,49 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorResponse'
       summary: Delete photo
+      tags:
+      - photos
+    put:
+      consumes:
+      - application/json
+      description: Update photo
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Bearer
+        required: true
+        type: string
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Request Body
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.PhotoReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.PhotoUpdateRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Update photo
       tags:
       - photos
   /users:
