@@ -1,6 +1,8 @@
 package models
 
 import (
+	"errors"
+
 	"github.com/Rahmatuldani/digitalent-project/data/request"
 	"gorm.io/gorm"
 )
@@ -17,6 +19,7 @@ type Photo struct {
 type PhotosInterface interface {
 	GetPhotos() ([]Photo, error)
 	PostPhoto(uint, request.PhotoPostReq) (Photo, error)
+	Delete(uint) error
 }
 
 type PhotoImpl struct {
@@ -49,4 +52,14 @@ func (p *PhotoImpl) PostPhoto(id uint, data request.PhotoPostReq) (Photo, error)
 		return Photo{}, err
 	}
 	return photo, nil
+}
+
+func (p *PhotoImpl) Delete(id uint) error {
+	if err := p.Db.First(&Photo{}, id).Error; err != nil {
+		return errors.New("photo not found")
+	}
+	if err := p.Db.Unscoped().Delete(&Photo{}, id).Error; err != nil {
+		return err
+	}
+	return nil
 }

@@ -15,7 +15,8 @@ func PhotoRoutes(db *gorm.DB, v *validator.Validate, r *gin.RouterGroup) {
 
 	basePath := r.Group("/photos")
 	{
-		basePath.GET("/", controller.GetAllPhoto)
-		basePath.POST("/", middlewares.Authentication(), controller.PostPhoto)
+		basePath.GET("/", middlewares.Authentication, controller.GetAllPhoto)
+		basePath.POST("/", middlewares.Authentication, controller.PostPhoto)
+		basePath.DELETE("/:id", middlewares.Authentication, controller.DeletePhoto)
 	}
 }

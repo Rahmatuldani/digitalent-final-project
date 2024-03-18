@@ -140,14 +140,6 @@ func (m *UsersControllerStruct) Register(ctx *gin.Context) {
 // @Failure 500 {object} response.ErrorResponse
 // @Router /users/{id} [put]
 func (m *UsersControllerStruct) Update(ctx *gin.Context) {
-	if !m.CheckUser(ctx) {
-		ctx.JSON(401, response.ErrorResponse{
-			Message: "Unauthorized",
-			Error: "User does not exist",
-		})
-		return
-	}
-
 	id := ctx.Param("id")
 	aid, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
@@ -201,31 +193,14 @@ func (m *UsersControllerStruct) Update(ctx *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param Bearer header string true "Bearer Token"
-// @Param id path int true "Id"
 // @Success 200 {object} response.WebResponse
 // @Failure 400 {object} response.ErrorResponse
 // @Failure 404 {object} response.ErrorResponse
 // @Failure 500 {object} response.ErrorResponse
-// @Router /users/{id} [delete]
+// @Router /users [delete]
 func (m *UsersControllerStruct) Delete(ctx *gin.Context) {
-	if !m.CheckUser(ctx) {
-		ctx.JSON(401, response.ErrorResponse{
-			Message: "Unauthorized",
-			Error: "User does not exist",
-		})
-		return
-	}
-	id := ctx.Param("id")
-	aid, err := strconv.ParseUint(id, 10, 64)
-	if err != nil {
-		ctx.JSON(400, response.ErrorResponse{
-			Message: "Can't read param id",
-			Error: err.Error(),
-		})
-		return
-	}
-	err = m.model.Delete(uint8(aid))
-	if err != nil {
+	id := ctx.MustGet("userId").(uint64)
+	if err := m.model.Delete(uint8(id)); err != nil {
 		ctx.JSON(500, response.ErrorResponse{
 			Message: "Delete user error",
 			Error: err.Error(),
@@ -235,9 +210,4 @@ func (m *UsersControllerStruct) Delete(ctx *gin.Context) {
 	ctx.JSON(200, response.WebResponse{
 		Message: "Your account has been successfully deleted",
 	})
-}
-
-func (m *UsersControllerStruct) CheckUser(ctx *gin.Context) bool {
-	id := ctx.MustGet("userId").(uint64)
-	return m.model.CheckUser(uint8(id))
 }

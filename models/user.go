@@ -82,11 +82,12 @@ func (u *UserImpl) Delete(id uint8) error {
 	if err != nil {
 		return err
 	}
+	u.Db.Model(&Photo{}).Unscoped().Where("user_id = ?", id).Delete(&Photo{})
 	err = u.Db.Unscoped().Delete(&User{}, id).Error
 	if err != nil {
 		return err
 	}
-	return nil 
+	return nil
 } 
 
 func (u *UserImpl) CheckUser(id uint8) bool {

@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"strconv"
+
 	"github.com/Rahmatuldani/digitalent-project/data/request"
 	"github.com/Rahmatuldani/digitalent-project/data/response"
 	"github.com/Rahmatuldani/digitalent-project/models"
@@ -27,6 +29,7 @@ func PhotosController(model models.PhotosInterface, v *validator.Validate) *Phot
 // @Tags photos
 // @Accept json
 // @Produce json
+// @Param Bearer header string true "Bearer Token"
 // @Success 200 {object} response.PhotosGetRes
 // @Failure 400 {object} response.ErrorResponse
 // @Failure 500 {object} response.ErrorResponse
@@ -106,5 +109,41 @@ func (m *PhotosControllerStruct) PostPhoto(ctx *gin.Context) {
 		PhotoUrl: result.PhotoUrl,
 		UserId: result.UserId,
 		CreatedAt: result.CreatedAt,
+	})
+}
+
+// Photos godoc
+// @Summary Delete photo
+// @Schemes
+// @Description Delete photo
+// @Tags photos
+// @Accept json
+// @Produce json
+// @Param Bearer header string true "Bearer Token"
+// @Param id path int true "ID"
+// @Success 200 {object} response.WebResponse
+// @Failure 400 {object} response.ErrorResponse
+// @Failure 401 {object} response.ErrorResponse
+// @Failure 500 {object} response.ErrorResponse
+// @Router /photos/{id} [delete]
+func (m *PhotosControllerStruct) DeletePhoto(ctx *gin.Context) {
+	id := ctx.Param("id")
+	aid, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		ctx.JSON(400, response.ErrorResponse{
+			Message: "Can't read param id",
+			Error: err.Error(),
+		})
+		return
+	}
+	if err := m.model.Delete(uint(aid)); err != nil {
+		ctx.JSON(500, response.ErrorResponse{
+			Message: "Delete photo error",
+			Error: err.Error(),
+		})
+		return
+	}
+	ctx.JSON(200, response.WebResponse{
+		Message: "Your photo has been successfully deleted",
 	})
 }

@@ -17,7 +17,7 @@ func UserRoutes(db *gorm.DB, v *validator.Validate, r *gin.RouterGroup) {
 	{
 		basePath.POST("/login", controller.Login)
 		basePath.POST("/register", controller.Register)
-		basePath.PUT("/:id", middlewares.Authentication(), controller.Update)
-		basePath.DELETE("/:id", middlewares.Authentication(), controller.Delete)
+		basePath.PUT("/:id", middlewares.Authentication, controller.Update)
+		basePath.DELETE("/", middlewares.Authentication, controller.Delete)
 	}
 }

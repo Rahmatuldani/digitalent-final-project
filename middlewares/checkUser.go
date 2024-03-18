@@ -14,9 +14,9 @@ func CheckUser(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(401, response.ErrorResponse{
 			Message: "Unauthorized",
-			Error: err.Error(),
+			Error: "User not found",
 		})
-		return
+		ctx.Abort()
 	}
 	ctx.Next()
 }
