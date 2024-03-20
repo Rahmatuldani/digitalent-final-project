@@ -6,6 +6,7 @@ import (
 	"github.com/Rahmatuldani/digitalent-project/data/request"
 	"github.com/Rahmatuldani/digitalent-project/helper"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type User struct {
@@ -82,8 +83,8 @@ func (u *UserImpl) Delete(id uint8) error {
 	if err != nil {
 		return err
 	}
-	u.Db.Model(&Photo{}).Unscoped().Where("user_id = ?", id).Delete(&Photo{})
-	err = u.Db.Unscoped().Delete(&User{}, id).Error
+	// u.Db.Model(&Photo{}).Unscoped().Where("user_id = ?", id).Delete(&Photo{})
+	err = u.Db.Unscoped().Select(clause.Associations).Delete(&User{}, id).Error
 	if err != nil {
 		return err
 	}

@@ -1,5 +1,15 @@
 basePath: /api/v1
 definitions:
+  request.CommentRequest:
+    properties:
+      message:
+        type: string
+      photo_id:
+        type: integer
+    required:
+    - message
+    - photo_id
+    type: object
   request.PhotoReq:
     properties:
       caption:
@@ -59,6 +69,38 @@ definitions:
       message:
         type: string
     type: object
+  response.GetComments:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      message:
+        type: string
+      photo:
+        $ref: '#/definitions/response.PhotoComment'
+      photo_url:
+        type: integer
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/response.UserComment'
+      user_id:
+        type: integer
+    type: object
+  response.PhotoComment:
+    properties:
+      caption:
+        type: string
+      id:
+        type: integer
+      photo_url:
+        type: string
+      title:
+        type: string
+      user_id:
+        type: integer
+    type: object
   response.PhotoPostRes:
     properties:
       caption:
@@ -108,9 +150,31 @@ definitions:
       user_id:
         type: integer
     type: object
+  response.PostComment:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      message:
+        type: string
+      photo_url:
+        type: integer
+      user_id:
+        type: integer
+    type: object
   response.TokenJWT:
     properties:
       token:
+        type: string
+    type: object
+  response.UserComment:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      username:
         type: string
     type: object
   response.UserPhotos:
@@ -142,6 +206,61 @@ info:
   title: MyGram API
   version: "1.0"
 paths:
+  /comments:
+    get:
+      consumes:
+      - application/json
+      description: Get comments
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Bearer
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetComments'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Get comments
+      tags:
+      - comments
+    post:
+      consumes:
+      - application/json
+      description: Post comments
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Bearer
+        required: true
+        type: string
+      - description: Request Body
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.CommentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.PostComment'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Post comments
+      tags:
+      - comments
   /photos:
     get:
       consumes:

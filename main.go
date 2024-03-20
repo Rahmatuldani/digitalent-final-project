@@ -27,6 +27,7 @@ func main() {
 	baseRouter := r.Group("/api/v1")
 	routers.UserRoutes(db, validate, baseRouter)
 	routers.PhotoRoutes(db, validate, baseRouter)
+	routers.CommentRoutes(db, validate, baseRouter)
 	
 	r.Run(":5000")
 }

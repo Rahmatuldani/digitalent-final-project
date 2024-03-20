@@ -13,7 +13,7 @@ var secretKey = []byte("secretkey")
 func GenerateJWT(data []byte) (string, error) {
 	claims := jwt.MapClaims{
 		"id": string(data),
-		"exp": time.Now().Add(time.Minute * 30).Unix(),
+		"exp": time.Now().Add(time.Minute * 60).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
