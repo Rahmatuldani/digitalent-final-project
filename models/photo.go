@@ -17,8 +17,8 @@ type Photo struct {
 }
 
 type PhotosInterface interface {
-	GetPhotos() ([]Photo, error)
-	PostPhoto(uint, request.PhotoReq) (Photo, error)
+	Get() ([]Photo, error)
+	Post(uint, request.PhotoReq) (Photo, error)
 	Update(uint, uint, request.PhotoReq) (Photo, error)
 	Delete(uint, uint) error
 }
@@ -32,53 +32,50 @@ func PhotosModel(Db *gorm.DB) PhotosInterface {
 	return &PhotoImpl{Db: Db}
 }
 
-func (p *PhotoImpl) GetPhotos() ([]Photo, error) {
+func (p *PhotoImpl) Get() ([]Photo, error) {
 	var photos []Photo
-	err := p.Db.Preload("User").Find(&photos).Error
-	if err != nil {
+	if err := p.Db.Preload("User").Find(&photos).Error; err != nil {
 		return nil, err
 	}
 	return photos, nil
 }
 
-func (p *PhotoImpl) PostPhoto(id uint, data request.PhotoReq) (Photo, error) {
+func (p *PhotoImpl) Post(id uint, data request.PhotoReq) (Photo, error) {
 	photo := Photo{
 		Title: data.Title,
 		Caption: data.Caption,
 		PhotoUrl: data.PhotoUrl,
 		UserId: id,
 	}
-	err := p.Db.Create(&photo).Error
-	if err != nil {
+	if err := p.Db.Create(&photo).Error; err != nil {
 		return Photo{}, err
 	}
 	return photo, nil
 }
 
-func (p *PhotoImpl) Update(user, id uint, data request.PhotoReq) (Photo, error) {
+func (p *PhotoImpl) Update(userId, id uint, data request.PhotoReq) (Photo, error) {
 	var photo Photo
-
 	if err := p.Db.First(&photo, id).Error; err != nil {
 		return Photo{}, errors.New("photo not found")
 	}
-
-	if user != photo.UserId {
+	if userId != photo.UserId {
 		return Photo{}, errors.New("can't update photos that aren't yours")
 	}
 	photo.Title = data.Title
 	photo.Caption = data.Caption
 	photo.PhotoUrl = data.PhotoUrl
-	p.Db.Save(&photo)
-
+	if err := p.Db.Save(&photo).Error; err != nil {
+		return Photo{}, nil
+	}
 	return photo, nil
 }
 
-func (p *PhotoImpl) Delete(user, id uint) error {
+func (p *PhotoImpl) Delete(userId, id uint) error {
 	var photo Photo
 	if err := p.Db.First(&photo, id).Error; err != nil {
 		return errors.New("photo not found")
 	}
-	if user != photo.UserId {
+	if userId != photo.UserId {
 		return errors.New("can't delete photos that aren't yours")
 	}
 	if err := p.Db.Unscoped().Delete(&Photo{}, id).Error; err != nil {

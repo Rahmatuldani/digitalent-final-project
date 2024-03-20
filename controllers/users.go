@@ -26,35 +26,30 @@ func UsersController(model models.UsersInterface, v *validator.Validate) *UsersC
 
 // Users godoc
 // @Summary User login
-// @Schemes
 // @Description User login
 // @Tags users
 // @Accept json
 // @Produce json
 // @Param req body request.UserLogin true "Request Body"
 // @Success 200 {object} response.TokenJWT
-// @Failure 400 {object} response.ErrorResponse
 // @Failure 500 {object} response.ErrorResponse
 // @Router /users/login [post]
 func (m *UsersControllerStruct) Login(ctx *gin.Context) {
 	var req request.UserLogin
-
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(400, response.ErrorResponse{
-			Message: "Can't Bind JSON",
-			Error:   err.Error(),
+			Message: "Can't bind JSON",
+			Error: err.Error(),
 		})
 		return
 	}
-
 	if err := m.validate.Struct(&req); err != nil {
 		ctx.JSON(400, response.ErrorResponse{
 			Message: "JSON does not match the request",
-			Error:   err.Error(),
+			Error: err.Error(),
 		})
 		return
 	}
-
 	user, err := m.model.Login(req)
 	if err != nil {
 		ctx.JSON(500, response.ErrorResponse{
@@ -72,38 +67,34 @@ func (m *UsersControllerStruct) Login(ctx *gin.Context) {
 		})
 		return
 	}
-	ctx.JSON(200, gin.H{
-		"token": token,
+	ctx.JSON(200, response.TokenJWT{
+		Token: token,
 	})
 }
 
 // Users godoc
 // @Summary User register
-// @Schemes
 // @Description User register
 // @Tags users
 // @Accept json
 // @Produce json
 // @Param req body request.UserRegReq true "Request Body"
 // @Success 201 {object} response.UserRegRes
-// @Failure 400 {object} response.ErrorResponse
 // @Failure 500 {object} response.ErrorResponse
 // @Router /users/register [post]
 func (m *UsersControllerStruct) Register(ctx *gin.Context) {
 	var req request.UserRegReq
-
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(400, response.ErrorResponse{
-			Message: "Can't Bind JSON",
-			Error:   err.Error(),
+			Message: "Can't bind JSON",
+			Error: err.Error(),
 		})
 		return
 	}
-
 	if err := m.validate.Struct(&req); err != nil {
 		ctx.JSON(400, response.ErrorResponse{
 			Message: "JSON does not match the request",
-			Error:   err.Error(),
+			Error: err.Error(),
 		})
 		return
 	}
@@ -125,21 +116,18 @@ func (m *UsersControllerStruct) Register(ctx *gin.Context) {
 
 // Users godoc
 // @Summary User update
-// @Schemes
 // @Description User update
 // @Tags users
 // @Accept json
 // @Produce json
 // @Param Bearer header string true "Bearer Token"
-// @Param id path int true "ID"
+// @Param userId path int true "User ID"
 // @Param req body request.UserUpdateReq true "Request Body"
 // @Success 200 {object} response.WebResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 401 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
 // @Failure 500 {object} response.ErrorResponse
-// @Router /users/{id} [put]
-func (m *UsersControllerStruct) Update(ctx *gin.Context) {
+// @Router /users/{userId} [put]
+func (m *UsersControllerStruct) UpdateUser(ctx *gin.Context) {
+	userId := ctx.MustGet("userId").(uint64)
 	id := ctx.Param("id")
 	aid, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
@@ -149,25 +137,22 @@ func (m *UsersControllerStruct) Update(ctx *gin.Context) {
 		})
 		return
 	}
-
 	var req request.UserUpdateReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(400, response.ErrorResponse{
-			Message: "Can't Bind JSON",
-			Error:   err.Error(),
+			Message: "Can't bind JSON",
+			Error: err.Error(),
 		})
 		return
 	}
-
 	if err := m.validate.Struct(&req); err != nil {
 		ctx.JSON(400, response.ErrorResponse{
 			Message: "JSON does not match the request",
-			Error:   err.Error(),
+			Error: err.Error(),
 		})
 		return
 	}
-	
-	user, err := m.model.Update(uint8(aid), req)
+	user, err := m.model.Update(uint(userId), uint(aid), req)
 	if err != nil {
 		ctx.JSON(500, response.ErrorResponse{
 			Message: "Server Error",
@@ -175,7 +160,6 @@ func (m *UsersControllerStruct) Update(ctx *gin.Context) {
 		})
 		return
 	}
-
 	ctx.JSON(200, response.UserUpdateRes{
 		Id: user.ID,
 		Email: user.Email,
@@ -187,20 +171,17 @@ func (m *UsersControllerStruct) Update(ctx *gin.Context) {
 
 // Users godoc
 // @Summary User delete
-// @Schemes
 // @Description User delete
 // @Tags users
 // @Accept json
 // @Produce json
 // @Param Bearer header string true "Bearer Token"
 // @Success 200 {object} response.WebResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 404 {object} response.ErrorResponse
 // @Failure 500 {object} response.ErrorResponse
 // @Router /users [delete]
-func (m *UsersControllerStruct) Delete(ctx *gin.Context) {
+func (m *UsersControllerStruct) DeleteUser(ctx *gin.Context) {
 	id := ctx.MustGet("userId").(uint64)
-	if err := m.model.Delete(uint8(id)); err != nil {
+	if err := m.model.Delete(uint(id)); err != nil {
 		ctx.JSON(500, response.ErrorResponse{
 			Message: "Delete user error",
 			Error: err.Error(),

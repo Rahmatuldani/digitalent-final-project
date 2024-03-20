@@ -24,18 +24,16 @@ func PhotosController(model models.PhotosInterface, v *validator.Validate) *Phot
 
 // Photos godoc
 // @Summary Get all photos
-// @Schemes
 // @Description Get all photos
 // @Tags photos
 // @Accept json
 // @Produce json
 // @Param Bearer header string true "Bearer Token"
 // @Success 200 {object} response.PhotosGetRes
-// @Failure 400 {object} response.ErrorResponse
 // @Failure 500 {object} response.ErrorResponse
 // @Router /photos [get]
-func (m *PhotosControllerStruct) GetAllPhoto(ctx *gin.Context) {
-	photos, err := m.model.GetPhotos()
+func (m *PhotosControllerStruct) GetPhotos(ctx *gin.Context) {
+	photos, err := m.model.Get()
 	if err != nil {
 		ctx.JSON(500, response.ErrorResponse{
 			Message: "Server Error",
@@ -65,7 +63,6 @@ func (m *PhotosControllerStruct) GetAllPhoto(ctx *gin.Context) {
 
 // Photos godoc
 // @Summary Post photo
-// @Schemes
 // @Description Post photo
 // @Tags photos
 // @Accept json
@@ -73,7 +70,6 @@ func (m *PhotosControllerStruct) GetAllPhoto(ctx *gin.Context) {
 // @Param Bearer header string true "Bearer Token"
 // @Param req body request.PhotoReq true "Request Body"
 // @Success 201 {object} response.PhotoPostRes
-// @Failure 400 {object} response.ErrorResponse
 // @Failure 500 {object} response.ErrorResponse
 // @Router /photos [post]
 func (m *PhotosControllerStruct) PostPhoto(ctx *gin.Context) {
@@ -81,20 +77,19 @@ func (m *PhotosControllerStruct) PostPhoto(ctx *gin.Context) {
 	var req request.PhotoReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(400, response.ErrorResponse{
-			Message: "Can't Bind JSON",
-			Error:   err.Error(),
+			Message: "Can't bind JSON",
+			Error: err.Error(),
 		})
 		return
 	}
-
 	if err := m.validate.Struct(&req); err != nil {
 		ctx.JSON(400, response.ErrorResponse{
 			Message: "JSON does not match the request",
-			Error:   err.Error(),
+			Error: err.Error(),
 		})
 		return
 	}
-	result, err := m.model.PostPhoto(uint(id), req)
+	result, err := m.model.Post(uint(id), req)
 	if err != nil {
 		ctx.JSON(500, response.ErrorResponse{
 			Message: "Server Error",
@@ -114,19 +109,16 @@ func (m *PhotosControllerStruct) PostPhoto(ctx *gin.Context) {
 
 // Photos godoc
 // @Summary Update photo
-// @Schemes
 // @Description Update photo
 // @Tags photos
 // @Accept json
 // @Produce json
 // @Param Bearer header string true "Bearer Token"
-// @Param id path int true "ID"
+// @Param photoId path int true "Photo ID"
 // @Param req body request.PhotoReq true "Request Body"
 // @Success 200 {object} response.PhotoUpdateRes
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 401 {object} response.ErrorResponse
 // @Failure 500 {object} response.ErrorResponse
-// @Router /photos/{id} [put]
+// @Router /photos/{photoId} [put]
 func (m *PhotosControllerStruct) UpdatePhoto(ctx *gin.Context) {
 	userId := ctx.MustGet("userId").(uint64)
 	id := ctx.Param("id")
@@ -141,16 +133,15 @@ func (m *PhotosControllerStruct) UpdatePhoto(ctx *gin.Context) {
 	var req request.PhotoReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(400, response.ErrorResponse{
-			Message: "Can't Bind JSON",
-			Error:   err.Error(),
+			Message: "Can't bind JSON",
+			Error: err.Error(),
 		})
 		return
 	}
-
 	if err := m.validate.Struct(&req); err != nil {
 		ctx.JSON(400, response.ErrorResponse{
 			Message: "JSON does not match the request",
-			Error:   err.Error(),
+			Error: err.Error(),
 		})
 		return
 	}
@@ -174,18 +165,15 @@ func (m *PhotosControllerStruct) UpdatePhoto(ctx *gin.Context) {
 
 // Photos godoc
 // @Summary Delete photo
-// @Schemes
 // @Description Delete photo
 // @Tags photos
 // @Accept json
 // @Produce json
 // @Param Bearer header string true "Bearer Token"
-// @Param id path int true "ID"
+// @Param photoId path int true "User ID"
 // @Success 200 {object} response.WebResponse
-// @Failure 400 {object} response.ErrorResponse
-// @Failure 401 {object} response.ErrorResponse
 // @Failure 500 {object} response.ErrorResponse
-// @Router /photos/{id} [delete]
+// @Router /photos/{photoId} [delete]
 func (m *PhotosControllerStruct) DeletePhoto(ctx *gin.Context) {
 	userId := ctx.MustGet("userId").(uint64)
 	id := ctx.Param("id")

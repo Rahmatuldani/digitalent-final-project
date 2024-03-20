@@ -224,12 +224,6 @@ const docTemplate = `{
                             "$ref": "#/definitions/response.PhotosGetRes"
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.ErrorResponse"
-                        }
-                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -275,12 +269,6 @@ const docTemplate = `{
                             "$ref": "#/definitions/response.PhotoPostRes"
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.ErrorResponse"
-                        }
-                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -290,7 +278,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/photos/{id}": {
+        "/photos/{photoId}": {
             "put": {
                 "description": "Update photo",
                 "consumes": [
@@ -313,8 +301,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "ID",
-                        "name": "id",
+                        "description": "Photo ID",
+                        "name": "photoId",
                         "in": "path",
                         "required": true
                     },
@@ -333,18 +321,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.PhotoUpdateRes"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/response.ErrorResponse"
                         }
                     },
                     "500": {
@@ -377,8 +353,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "ID",
-                        "name": "id",
+                        "description": "User ID",
+                        "name": "photoId",
                         "in": "path",
                         "required": true
                     }
@@ -388,18 +364,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.WebResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/response.ErrorResponse"
                         }
                     },
                     "500": {
@@ -438,18 +402,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.WebResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/response.ErrorResponse"
                         }
                     },
                     "500": {
@@ -492,12 +444,6 @@ const docTemplate = `{
                             "$ref": "#/definitions/response.TokenJWT"
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.ErrorResponse"
-                        }
-                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -538,12 +484,6 @@ const docTemplate = `{
                             "$ref": "#/definitions/response.UserRegRes"
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.ErrorResponse"
-                        }
-                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -553,7 +493,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{id}": {
+        "/users/{userId}": {
             "put": {
                 "description": "User update",
                 "consumes": [
@@ -576,8 +516,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "ID",
-                        "name": "id",
+                        "description": "User ID",
+                        "name": "userId",
                         "in": "path",
                         "required": true
                     },
@@ -596,24 +536,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.WebResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/response.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/response.ErrorResponse"
                         }
                     },
                     "500": {

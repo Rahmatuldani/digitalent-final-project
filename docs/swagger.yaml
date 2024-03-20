@@ -364,10 +364,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/response.PhotosGetRes'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
@@ -398,10 +394,6 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/response.PhotoPostRes'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
@@ -409,7 +401,7 @@ paths:
       summary: Post photo
       tags:
       - photos
-  /photos/{id}:
+  /photos/{photoId}:
     delete:
       consumes:
       - application/json
@@ -420,9 +412,9 @@ paths:
         name: Bearer
         required: true
         type: string
-      - description: ID
+      - description: User ID
         in: path
-        name: id
+        name: photoId
         required: true
         type: integer
       produces:
@@ -432,14 +424,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/response.WebResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
@@ -457,9 +441,9 @@ paths:
         name: Bearer
         required: true
         type: string
-      - description: ID
+      - description: Photo ID
         in: path
-        name: id
+        name: photoId
         required: true
         type: integer
       - description: Request Body
@@ -475,14 +459,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/response.PhotoUpdateRes'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
@@ -508,14 +484,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/response.WebResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
@@ -523,7 +491,7 @@ paths:
       summary: User delete
       tags:
       - users
-  /users/{id}:
+  /users/{userId}:
     put:
       consumes:
       - application/json
@@ -534,9 +502,9 @@ paths:
         name: Bearer
         required: true
         type: string
-      - description: ID
+      - description: User ID
         in: path
-        name: id
+        name: userId
         required: true
         type: integer
       - description: Request Body
@@ -552,18 +520,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/response.WebResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/response.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
@@ -590,10 +546,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/response.TokenJWT'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
@@ -620,10 +572,6 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/response.UserRegRes'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:

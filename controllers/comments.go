@@ -37,30 +37,30 @@ func (m *CommentsControllerStruct) GetComment(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(500, response.ErrorResponse{
 			Message: "Get comments error",
-			Error: err.Error(),
+			Error:   err.Error(),
 		})
 		return
 	}
 	var result []response.GetComments
 	for _, v := range comments {
 		result = append(result, response.GetComments{
-			Id: v.ID,
-			Message: v.Message,
-			PhotoId: v.PhotoId,
-			UserId: v.UserId,
+			Id:        v.ID,
+			Message:   v.Message,
+			PhotoId:   v.PhotoId,
+			UserId:    v.UserId,
 			CreatedAt: v.CreatedAt,
 			UpdatedAt: v.UpdatedAt,
 			User: response.UserComment{
-				Id: v.User.ID,
-				Email: v.User.Email,
+				Id:       v.User.ID,
+				Email:    v.User.Email,
 				Username: v.User.Username,
 			},
 			Photo: response.PhotoComment{
-				Id: v.Photo.ID,
-				Title: v.Photo.Title,
-				Caption: v.Photo.Caption,
+				Id:       v.Photo.ID,
+				Title:    v.Photo.Title,
+				Caption:  v.Photo.Caption,
 				PhotoUrl: v.Photo.PhotoUrl,
-				UserId: v.Photo.UserId,
+				UserId:   v.Photo.UserId,
 			},
 		})
 	}
@@ -83,16 +83,15 @@ func (m *CommentsControllerStruct) PostComment(ctx *gin.Context) {
 	var req request.CommentRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(400, response.ErrorResponse{
-			Message: "Can't Bind JSON",
-			Error:   err.Error(),
+			Message: "Can't bind JSON",
+			Error: err.Error(),
 		})
 		return
 	}
-
 	if err := m.validate.Struct(&req); err != nil {
 		ctx.JSON(400, response.ErrorResponse{
 			Message: "JSON does not match the request",
-			Error:   err.Error(),
+			Error: err.Error(),
 		})
 		return
 	}
@@ -100,15 +99,15 @@ func (m *CommentsControllerStruct) PostComment(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(500, response.ErrorResponse{
 			Message: "Create comment error",
-			Error: err.Error(),
+			Error:   err.Error(),
 		})
 		return
 	}
 	ctx.JSON(201, response.PostComment{
-		Id: comment.ID,
-		Message: comment.Message,
-		PhotoId: comment.PhotoId,
-		UserId: comment.UserId,
+		Id:        comment.ID,
+		Message:   comment.Message,
+		PhotoId:   comment.PhotoId,
+		UserId:    comment.UserId,
 		CreatedAt: comment.CreatedAt,
 	})
 }
@@ -132,23 +131,22 @@ func (m *CommentsControllerStruct) UpdateComment(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(400, response.ErrorResponse{
 			Message: "Can't read param id",
-			Error: err.Error(),
+			Error:   err.Error(),
 		})
 		return
 	}
 	var req request.CommentUpdateReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(400, response.ErrorResponse{
-			Message: "Can't Bind JSON",
-			Error:   err.Error(),
+			Message: "Can't bind JSON",
+			Error: err.Error(),
 		})
 		return
 	}
-
 	if err := m.validate.Struct(&req); err != nil {
 		ctx.JSON(400, response.ErrorResponse{
 			Message: "JSON does not match the request",
-			Error:   err.Error(),
+			Error: err.Error(),
 		})
 		return
 	}
@@ -156,15 +154,15 @@ func (m *CommentsControllerStruct) UpdateComment(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(500, response.ErrorResponse{
 			Message: "Update comment error",
-			Error: err.Error(),
+			Error:   err.Error(),
 		})
 		return
 	}
 	ctx.JSON(201, response.UpdateComment{
-		Id: comment.ID,
-		Message: comment.Message,
-		PhotoId: comment.PhotoId,
-		UserId: comment.UserId,
+		Id:        comment.ID,
+		Message:   comment.Message,
+		PhotoId:   comment.PhotoId,
+		UserId:    comment.UserId,
 		UpdatedAt: comment.UpdatedAt,
 	})
 }
@@ -187,14 +185,14 @@ func (m *CommentsControllerStruct) DeleteComment(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(400, response.ErrorResponse{
 			Message: "Can't read param id",
-			Error: err.Error(),
+			Error:   err.Error(),
 		})
 		return
 	}
 	if err := m.model.Delete(uint(userId), uint(aid)); err != nil {
 		ctx.JSON(500, response.ErrorResponse{
 			Message: "Update comment error",
-			Error: err.Error(),
+			Error:   err.Error(),
 		})
 		return
 	}

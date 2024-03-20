@@ -20,8 +20,8 @@ type User struct {
 type UsersInterface interface {
 	Login(request.UserLogin) (User, error)
 	Register(request.UserRegReq) (User, error)
-	Update(uint8, request.UserUpdateReq) (User, error)
-	Delete(uint8) error
+	Update(uint, uint, request.UserUpdateReq) (User, error)
+	Delete(uint) error
 	CheckUser(uint8) bool
 }
 
@@ -36,15 +36,12 @@ func UsersModel(Db *gorm.DB) UsersInterface {
 
 func (u *UserImpl) Login(data request.UserLogin) (User, error) {
 	var user User
-	err := u.Db.Where("email = ?", data.Email).First(&user).Error
-	if err != nil {
+	if err := u.Db.Where("email = ?", data.Email).First(&user).Error; err != nil {
 		return User{}, errors.New("user not found")
 	}
-
 	if !helper.ComparePassword(user.Password, data.Password) {
 		return User{}, errors.New("password did not match")
 	}
-
 	return user, nil
 }
 
@@ -59,33 +56,33 @@ func (u *UserImpl) Register(data request.UserRegReq) (User, error) {
 		Password: password,
 		Age: data.Age,
 	}
-	err = u.Db.Create(&user).Error
-	if err != nil {
+	if err = u.Db.Create(&user).Error; err != nil {
 		return User{}, err
 	}
 	return user, nil
 }
 
-func (u *UserImpl) Update(id uint8, data request.UserUpdateReq) (User, error) {
+func (u *UserImpl) Update(userId, id uint, data request.UserUpdateReq) (User, error) {
 	var user User
-	err := u.Db.First(&user, id).Error
-	if err != nil {
-		return User{}, err
+	if err := u.Db.First(&user, id).Error; err != nil {
+		return User{}, errors.New("user not found")
+	}
+	if user.ID != userId {
+		return User{}, errors.New("can't update user data that aren't yours")
 	}
 	user.Email = data.Email
 	user.Username = data.Username
-	u.Db.Save(&user)
+	if err := u.Db.Save(&user).Error; err != nil {
+		return User{}, err
+	}
 	return user, nil
 }
 
-func (u *UserImpl) Delete(id uint8) error {
-	err := u.Db.First(&User{}, id).Error
-	if err != nil {
-		return err
+func (u *UserImpl) Delete(id uint) error {
+	if err := u.Db.First(&User{}, id).Error; err != nil {
+		return errors.New("user not found")
 	}
-	// u.Db.Model(&Photo{}).Unscoped().Where("user_id = ?", id).Delete(&Photo{})
-	err = u.Db.Unscoped().Select(clause.Associations).Delete(&User{}, id).Error
-	if err != nil {
+	if err := u.Db.Unscoped().Select(clause.Associations).Delete(&User{}, id).Error; err != nil {
 		return err
 	}
 	return nil
