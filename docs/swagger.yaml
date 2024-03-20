@@ -10,6 +10,13 @@ definitions:
     - message
     - photo_id
     type: object
+  request.CommentUpdateReq:
+    properties:
+      message:
+        type: string
+    required:
+    - message
+    type: object
   request.PhotoReq:
     properties:
       caption:
@@ -79,7 +86,7 @@ definitions:
         type: string
       photo:
         $ref: '#/definitions/response.PhotoComment'
-      photo_url:
+      photo_id:
         type: integer
       updated_at:
         type: string
@@ -168,6 +175,19 @@ definitions:
       token:
         type: string
     type: object
+  response.UpdateComment:
+    properties:
+      id:
+        type: integer
+      message:
+        type: string
+      photo_url:
+        type: integer
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
   response.UserComment:
     properties:
       email:
@@ -250,8 +270,8 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
             $ref: '#/definitions/response.PostComment'
         "500":
@@ -259,6 +279,71 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorResponse'
       summary: Post comments
+      tags:
+      - comments
+  /comments/{commentId}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete comment
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Bearer
+        required: true
+        type: string
+      - description: Comment ID
+        in: path
+        name: commentId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Delete comment
+      tags:
+      - comments
+    put:
+      consumes:
+      - application/json
+      description: Update comment
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Bearer
+        required: true
+        type: string
+      - description: Comment ID
+        in: path
+        name: commentId
+        required: true
+        type: integer
+      - description: Request Body
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.CommentUpdateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UpdateComment'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Update comment
       tags:
       - comments
   /photos:

@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"strconv"
+
 	"github.com/Rahmatuldani/digitalent-project/data/request"
 	"github.com/Rahmatuldani/digitalent-project/data/response"
 	"github.com/Rahmatuldani/digitalent-project/models"
@@ -73,7 +75,7 @@ func (m *CommentsControllerStruct) GetComment(ctx *gin.Context) {
 // @Produce json
 // @Param Bearer header string true "Bearer Token"
 // @Param req body request.CommentRequest true "Request Body"
-// @Success 200 {object} response.PostComment
+// @Success 201 {object} response.PostComment
 // @Failure 500 {object} response.ErrorResponse
 // @Router /comments [post]
 func (m *CommentsControllerStruct) PostComment(ctx *gin.Context) {
@@ -102,11 +104,101 @@ func (m *CommentsControllerStruct) PostComment(ctx *gin.Context) {
 		})
 		return
 	}
-	ctx.JSON(200, response.PostComment{
+	ctx.JSON(201, response.PostComment{
 		Id: comment.ID,
 		Message: comment.Message,
 		PhotoId: comment.PhotoId,
 		UserId: comment.UserId,
 		CreatedAt: comment.CreatedAt,
+	})
+}
+
+// Comments godoc
+// @Summary Update comment
+// @Description Update comment
+// @Tags comments
+// @Accept json
+// @Produce json
+// @Param Bearer header string true "Bearer Token"
+// @Param commentId path int true "Comment ID"
+// @Param req body request.CommentUpdateReq true "Request Body"
+// @Success 200 {object} response.UpdateComment
+// @Failure 500 {object} response.ErrorResponse
+// @Router /comments/{commentId} [put]
+func (m *CommentsControllerStruct) UpdateComment(ctx *gin.Context) {
+	userId := ctx.MustGet("userId").(uint64)
+	id := ctx.Param("id")
+	aid, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		ctx.JSON(400, response.ErrorResponse{
+			Message: "Can't read param id",
+			Error: err.Error(),
+		})
+		return
+	}
+	var req request.CommentUpdateReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(400, response.ErrorResponse{
+			Message: "Can't Bind JSON",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	if err := m.validate.Struct(&req); err != nil {
+		ctx.JSON(400, response.ErrorResponse{
+			Message: "JSON does not match the request",
+			Error:   err.Error(),
+		})
+		return
+	}
+	comment, err := m.model.Update(uint(userId), uint(aid), req)
+	if err != nil {
+		ctx.JSON(500, response.ErrorResponse{
+			Message: "Update comment error",
+			Error: err.Error(),
+		})
+		return
+	}
+	ctx.JSON(201, response.UpdateComment{
+		Id: comment.ID,
+		Message: comment.Message,
+		PhotoId: comment.PhotoId,
+		UserId: comment.UserId,
+		UpdatedAt: comment.UpdatedAt,
+	})
+}
+
+// Comments godoc
+// @Summary Delete comment
+// @Description Delete comment
+// @Tags comments
+// @Accept json
+// @Produce json
+// @Param Bearer header string true "Bearer Token"
+// @Param commentId path int true "Comment ID"
+// @Success 200 {object} response.WebResponse
+// @Failure 500 {object} response.ErrorResponse
+// @Router /comments/{commentId} [delete]
+func (m *CommentsControllerStruct) DeleteComment(ctx *gin.Context) {
+	userId := ctx.MustGet("userId").(uint64)
+	id := ctx.Param("id")
+	aid, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		ctx.JSON(400, response.ErrorResponse{
+			Message: "Can't read param id",
+			Error: err.Error(),
+		})
+		return
+	}
+	if err := m.model.Delete(uint(userId), uint(aid)); err != nil {
+		ctx.JSON(500, response.ErrorResponse{
+			Message: "Update comment error",
+			Error: err.Error(),
+		})
+		return
+	}
+	ctx.JSON(201, response.WebResponse{
+		Message: "Your comment has been successfully deleted",
 	})
 }

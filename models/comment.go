@@ -19,6 +19,8 @@ type Comment struct {
 type CommentsInterface interface {
 	Get() ([]Comment, error)
 	Post(uint, request.CommentRequest) (Comment, error)
+	Update(uint, uint, request.CommentUpdateReq) (Comment, error)
+	Delete(uint, uint) error
 }
 type CommentImpl struct {
 	Db *gorm.DB
@@ -47,7 +49,36 @@ func (c *CommentImpl) Post(userId uint, data request.CommentRequest) (Comment, e
 		Message: data.Message,
 	}
 	if err := c.Db.Create(&comment).Error; err != nil {
-		return Comment{}, nil
+		return Comment{}, err
 	}
 	return comment, nil
+}
+
+func (c *CommentImpl) Update(userId, id uint, data request.CommentUpdateReq) (Comment, error) {
+	var comment Comment
+	if err := c.Db.First(&comment, id).Error; err != nil {
+		return Comment{}, errors.New("comment not found")
+	}
+	if comment.UserId != userId {
+		return Comment{}, errors.New("can't update comment that aren't yours")
+	}
+	comment.Message = data.Message
+	if err := c.Db.Save(&comment).Error; err != nil {
+		return Comment{}, err
+	}
+	return comment, nil
+}
+
+func (c *CommentImpl) Delete(userId, id uint) error {
+	var comment Comment
+	if err := c.Db.First(&comment, id).Error; err != nil {
+		return errors.New("comment not found")
+	}
+	if comment.UserId != userId {
+		return errors.New("can't delete comment that aren't yours")
+	}
+	if err := c.Db.Unscoped().Delete(&comment).Error; err != nil {
+		return err
+	}
+	return nil
 }

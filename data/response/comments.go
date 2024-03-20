@@ -34,3 +34,11 @@ type PostComment struct {
 	UserId    uint      `json:"user_id"`
 	CreatedAt time.Time `json:"created_at"`
 }
+
+type UpdateComment struct {
+	Id        uint      `json:"id"`
+	Message   string    `json:"message"`
+	PhotoId   uint      `json:"photo_url"`
+	UserId    uint      `json:"user_id"`
+	UpdatedAt time.Time `json:"updated_at"`
+}

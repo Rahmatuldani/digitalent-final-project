@@ -18,5 +18,7 @@ func CommentRoutes(db *gorm.DB, v *validator.Validate, r *gin.RouterGroup) {
 		basePath.Use(middlewares.Authentication)
 		basePath.GET("/", controller.GetComment)
 		basePath.POST("/", controller.PostComment)
+		basePath.PUT("/:id", controller.UpdateComment)
+		basePath.DELETE("/:id", controller.DeleteComment)
 	}
 }
