@@ -375,6 +375,89 @@ const docTemplate = `{
                 }
             }
         },
+        "/socialmedias": {
+            "get": {
+                "description": "Get social media",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "SocialMedia"
+                ],
+                "summary": "Get social media",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Bearer",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetSocialMedia"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Post social media",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "SocialMedia"
+                ],
+                "summary": "Post social media",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Bearer",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Request Body",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.PostSocialMediaReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/response.PostSocialMedia"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users": {
             "delete": {
                 "description": "User delete",
@@ -594,6 +677,21 @@ const docTemplate = `{
                 }
             }
         },
+        "request.PostSocialMediaReq": {
+            "type": "object",
+            "required": [
+                "name",
+                "social_media_url"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "social_media_url": {
+                    "type": "string"
+                }
+            }
+        },
         "request.UserLogin": {
             "type": "object",
             "required": [
@@ -684,6 +782,32 @@ const docTemplate = `{
                 },
                 "user": {
                     "$ref": "#/definitions/response.UserComment"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "response.GetSocialMedia": {
+            "type": "object",
+            "properties": {
+                "User": {
+                    "$ref": "#/definitions/response.UserSocialMedia"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "social_media_url": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
                 },
                 "user_id": {
                     "type": "integer"
@@ -805,6 +929,26 @@ const docTemplate = `{
                 }
             }
         },
+        "response.PostSocialMedia": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "social_media_url": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "response.TokenJWT": {
             "type": "object",
             "properties": {
@@ -869,6 +1013,20 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.UserSocialMedia": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "profile_image_url": {
+                    "type": "string"
                 },
                 "username": {
                     "type": "string"

@@ -30,6 +30,16 @@ definitions:
     - photo_url
     - title
     type: object
+  request.PostSocialMediaReq:
+    properties:
+      name:
+        type: string
+      social_media_url:
+        type: string
+    required:
+    - name
+    - social_media_url
+    type: object
   request.UserLogin:
     properties:
       email:
@@ -92,6 +102,23 @@ definitions:
         type: string
       user:
         $ref: '#/definitions/response.UserComment'
+      user_id:
+        type: integer
+    type: object
+  response.GetSocialMedia:
+    properties:
+      User:
+        $ref: '#/definitions/response.UserSocialMedia'
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      social_media_url:
+        type: string
+      updated_at:
+        type: string
       user_id:
         type: integer
     type: object
@@ -170,6 +197,19 @@ definitions:
       user_id:
         type: integer
     type: object
+  response.PostSocialMedia:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      social_media_url:
+        type: string
+      user_id:
+        type: integer
+    type: object
   response.TokenJWT:
     properties:
       token:
@@ -212,6 +252,15 @@ definitions:
         type: string
       id:
         type: integer
+      username:
+        type: string
+    type: object
+  response.UserSocialMedia:
+    properties:
+      id:
+        type: integer
+      profile_image_url:
+        type: string
       username:
         type: string
     type: object
@@ -466,6 +515,61 @@ paths:
       summary: Update photo
       tags:
       - photos
+  /socialmedias:
+    get:
+      consumes:
+      - application/json
+      description: Get social media
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Bearer
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetSocialMedia'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Get social media
+      tags:
+      - SocialMedia
+    post:
+      consumes:
+      - application/json
+      description: Post social media
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Bearer
+        required: true
+        type: string
+      - description: Request Body
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.PostSocialMediaReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.PostSocialMedia'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Post social media
+      tags:
+      - SocialMedia
   /users:
     delete:
       consumes:

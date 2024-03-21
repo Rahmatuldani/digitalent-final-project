@@ -28,6 +28,7 @@ func main() {
 	routers.UserRoutes(db, validate, baseRouter)
 	routers.PhotoRoutes(db, validate, baseRouter)
 	routers.CommentRoutes(db, validate, baseRouter)
+	routers.SocialMediaRoutes(db, validate, baseRouter)
 	
 	r.Run(":5000")
 }
