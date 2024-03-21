@@ -18,7 +18,7 @@ func SocialMediaRoutes(db *gorm.DB, v *validator.Validate, r *gin.RouterGroup) {
 		basePath.Use(middlewares.Authentication)
 		basePath.GET("/", controller.GetSocialMedia)
 		basePath.POST("/", controller.PostSocialMedia)
-		// basePath.PUT("/:id", controller.UpdateComment)
-		// basePath.DELETE("/:id", controller.DeleteComment)
+		basePath.PUT("/:id", controller.UpdateSocialMedia)
+		basePath.DELETE("/:id", controller.DeleteSocialMedia)
 	}
 }

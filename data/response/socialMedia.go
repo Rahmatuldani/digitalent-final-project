@@ -3,9 +3,9 @@ package response
 import "time"
 
 type UserSocialMedia struct {
-	Id              uint   `json:"id"`
-	Username        string `json:"username"`
-	ProfileImageUrl string `json:"profile_image_url"`
+	Id       uint   `json:"id"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
 }
 
 type SocialMediaStruct struct {
@@ -28,4 +28,12 @@ type PostSocialMedia struct {
 	Url       string    `json:"social_media_url"`
 	UserId    uint      `json:"user_id"`
 	CreatedAt time.Time `json:"created_at"`
+}
+
+type UpdateSocialMedia struct {
+	Id        uint      `json:"id"`
+	Name      string    `json:"name"`
+	Url       string    `json:"social_media_url"`
+	UserId    uint      `json:"user_id"`
+	UpdatedAt time.Time `json:"updated_at"`
 }

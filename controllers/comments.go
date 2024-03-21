@@ -158,7 +158,7 @@ func (m *CommentsControllerStruct) UpdateComment(ctx *gin.Context) {
 		})
 		return
 	}
-	ctx.JSON(201, response.UpdateComment{
+	ctx.JSON(200, response.UpdateComment{
 		Id:        comment.ID,
 		Message:   comment.Message,
 		PhotoId:   comment.PhotoId,
@@ -191,12 +191,12 @@ func (m *CommentsControllerStruct) DeleteComment(ctx *gin.Context) {
 	}
 	if err := m.model.Delete(uint(userId), uint(aid)); err != nil {
 		ctx.JSON(500, response.ErrorResponse{
-			Message: "Update comment error",
+			Message: "Delete comment error",
 			Error:   err.Error(),
 		})
 		return
 	}
-	ctx.JSON(201, response.WebResponse{
+	ctx.JSON(200, response.WebResponse{
 		Message: "Your comment has been successfully deleted",
 	})
 }

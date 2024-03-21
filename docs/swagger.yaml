@@ -30,7 +30,7 @@ definitions:
     - photo_url
     - title
     type: object
-  request.PostSocialMediaReq:
+  request.SocialMediaReq:
     properties:
       name:
         type: string
@@ -107,20 +107,10 @@ definitions:
     type: object
   response.GetSocialMedia:
     properties:
-      User:
-        $ref: '#/definitions/response.UserSocialMedia'
-      created_at:
-        type: string
-      id:
-        type: integer
-      name:
-        type: string
-      social_media_url:
-        type: string
-      updated_at:
-        type: string
-      user_id:
-        type: integer
+      social_medias:
+        items:
+          $ref: '#/definitions/response.SocialMediaStruct'
+        type: array
     type: object
   response.PhotoComment:
     properties:
@@ -192,7 +182,7 @@ definitions:
         type: integer
       message:
         type: string
-      photo_url:
+      photo_id:
         type: integer
       user_id:
         type: integer
@@ -210,6 +200,23 @@ definitions:
       user_id:
         type: integer
     type: object
+  response.SocialMediaStruct:
+    properties:
+      User:
+        $ref: '#/definitions/response.UserSocialMedia'
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      social_media_url:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
   response.TokenJWT:
     properties:
       token:
@@ -221,8 +228,21 @@ definitions:
         type: integer
       message:
         type: string
-      photo_url:
+      photo_id:
         type: integer
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  response.UpdateSocialMedia:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      social_media_url:
+        type: string
       updated_at:
         type: string
       user_id:
@@ -257,10 +277,10 @@ definitions:
     type: object
   response.UserSocialMedia:
     properties:
+      email:
+        type: string
       id:
         type: integer
-      profile_image_url:
-        type: string
       username:
         type: string
     type: object
@@ -555,7 +575,7 @@ paths:
         name: req
         required: true
         schema:
-          $ref: '#/definitions/request.PostSocialMediaReq'
+          $ref: '#/definitions/request.SocialMediaReq'
       produces:
       - application/json
       responses:
@@ -568,6 +588,71 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorResponse'
       summary: Post social media
+      tags:
+      - SocialMedia
+  /socialmedias/{socialMediaId}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete social media
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Bearer
+        required: true
+        type: string
+      - description: Social Media ID
+        in: path
+        name: socialMediaId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Delete social media
+      tags:
+      - SocialMedia
+    put:
+      consumes:
+      - application/json
+      description: Update social media
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Bearer
+        required: true
+        type: string
+      - description: Social Media ID
+        in: path
+        name: socialMediaId
+        required: true
+        type: integer
+      - description: Request Body
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.SocialMediaReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UpdateSocialMedia'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Update social media
       tags:
       - SocialMedia
   /users:

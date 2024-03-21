@@ -438,7 +438,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.PostSocialMediaReq"
+                            "$ref": "#/definitions/request.SocialMediaReq"
                         }
                     }
                 ],
@@ -447,6 +447,103 @@ const docTemplate = `{
                         "description": "Created",
                         "schema": {
                             "$ref": "#/definitions/response.PostSocialMedia"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/socialmedias/{socialMediaId}": {
+            "put": {
+                "description": "Update social media",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "SocialMedia"
+                ],
+                "summary": "Update social media",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Bearer",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Social Media ID",
+                        "name": "socialMediaId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Request Body",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.SocialMediaReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.UpdateSocialMedia"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete social media",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "SocialMedia"
+                ],
+                "summary": "Delete social media",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Bearer",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Social Media ID",
+                        "name": "socialMediaId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.WebResponse"
                         }
                     },
                     "500": {
@@ -677,7 +774,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.PostSocialMediaReq": {
+        "request.SocialMediaReq": {
             "type": "object",
             "required": [
                 "name",
@@ -791,26 +888,11 @@ const docTemplate = `{
         "response.GetSocialMedia": {
             "type": "object",
             "properties": {
-                "User": {
-                    "$ref": "#/definitions/response.UserSocialMedia"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "social_media_url": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "integer"
+                "social_medias": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.SocialMediaStruct"
+                    }
                 }
             }
         },
@@ -921,7 +1003,7 @@ const docTemplate = `{
                 "message": {
                     "type": "string"
                 },
-                "photo_url": {
+                "photo_id": {
                     "type": "integer"
                 },
                 "user_id": {
@@ -949,6 +1031,32 @@ const docTemplate = `{
                 }
             }
         },
+        "response.SocialMediaStruct": {
+            "type": "object",
+            "properties": {
+                "User": {
+                    "$ref": "#/definitions/response.UserSocialMedia"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "social_media_url": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "response.TokenJWT": {
             "type": "object",
             "properties": {
@@ -966,8 +1074,28 @@ const docTemplate = `{
                 "message": {
                     "type": "string"
                 },
-                "photo_url": {
+                "photo_id": {
                     "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "response.UpdateSocialMedia": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "social_media_url": {
+                    "type": "string"
                 },
                 "updated_at": {
                     "type": "string"
@@ -1022,11 +1150,11 @@ const docTemplate = `{
         "response.UserSocialMedia": {
             "type": "object",
             "properties": {
+                "email": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
-                },
-                "profile_image_url": {
-                    "type": "string"
                 },
                 "username": {
                     "type": "string"
