@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -10,9 +9,7 @@ import (
 )
 
 func init() {
-	if err := godotenv.Load(); err != nil {
-		panic("Error loading .env file")
-	}
+	godotenv.Load()
 }
 
 var (
@@ -28,8 +25,6 @@ func DBConnect() {
 	dbname := os.Getenv("DB_NAME")
 
 	dsn := username + ":" + password + "@tcp(" + host + ":" + port + ")/" + dbname + "?parseTime=true"
-	fmt.Println(dsn)
-	// dsn := "root:podyQsHisuzhRaTyILQUQPQvzrwMKICA@tcp(roundhouse.proxy.rlwy.net:52387)/railway?parseTime=true"
 	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("Database connection Error : " + err.Error())
