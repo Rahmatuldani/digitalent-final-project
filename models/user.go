@@ -20,7 +20,7 @@ type User struct {
 type UsersInterface interface {
 	Login(request.UserLogin) (User, error)
 	Register(request.UserRegReq) (User, error)
-	Update(uint, uint, request.UserUpdateReq) (User, error)
+	Update(uint, request.UserUpdateReq) (User, error)
 	Delete(uint) error
 	CheckUser(uint8) bool
 }
@@ -62,13 +62,10 @@ func (u *UserImpl) Register(data request.UserRegReq) (User, error) {
 	return user, nil
 }
 
-func (u *UserImpl) Update(userId, id uint, data request.UserUpdateReq) (User, error) {
+func (u *UserImpl) Update(userId uint, data request.UserUpdateReq) (User, error) {
 	var user User
-	if err := u.Db.First(&user, id).Error; err != nil {
+	if err := u.Db.First(&user, userId).Error; err != nil {
 		return User{}, errors.New("user not found")
-	}
-	if user.ID != userId {
-		return User{}, errors.New("can't update user data that aren't yours")
 	}
 	user.Email = data.Email
 	user.Username = data.Username

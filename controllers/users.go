@@ -121,22 +121,12 @@ func (m *UsersControllerStruct) Register(ctx *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param Bearer header string true "Bearer Token"
-// @Param userId path int true "User ID"
 // @Param req body request.UserUpdateReq true "Request Body"
 // @Success 200 {object} response.WebResponse
 // @Failure 500 {object} response.ErrorResponse
-// @Router /users/{userId} [put]
+// @Router /users [put]
 func (m *UsersControllerStruct) UpdateUser(ctx *gin.Context) {
 	userId := ctx.MustGet("userId").(uint64)
-	id := ctx.Param("id")
-	aid, err := strconv.ParseUint(id, 10, 64)
-	if err != nil {
-		ctx.JSON(400, response.ErrorResponse{
-			Message: "Can't read param id",
-			Error: err.Error(),
-		})
-		return
-	}
 	var req request.UserUpdateReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(400, response.ErrorResponse{
@@ -152,7 +142,7 @@ func (m *UsersControllerStruct) UpdateUser(ctx *gin.Context) {
 		})
 		return
 	}
-	user, err := m.model.Update(uint(userId), uint(aid), req)
+	user, err := m.model.Update(uint(userId), req)
 	if err != nil {
 		ctx.JSON(500, response.ErrorResponse{
 			Message: "Server Error",

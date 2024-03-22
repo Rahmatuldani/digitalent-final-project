@@ -2,10 +2,10 @@ package main
 
 import (
 	"github.com/Rahmatuldani/digitalent-project/config"
+	docs "github.com/Rahmatuldani/digitalent-project/docs"
 	"github.com/Rahmatuldani/digitalent-project/routers"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	docs "github.com/Rahmatuldani/digitalent-project/docs"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
