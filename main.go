@@ -15,7 +15,7 @@ import (
 // @title MyGram API
 // @version 1.0
 // @description Server API for MyGram app
-// @host https://digitalent-final-project-production.up.railway.app
+// @host digitalent-final-project-production.up.railway.app
 // @BasePath /api/v1
 
 func main() {

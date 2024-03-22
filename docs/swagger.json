@@ -6,7 +6,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "https://digitalent-final-project-production.up.railway.app",
+    "host": "digitalent-final-project-production.up.railway.app",
     "basePath": "/api/v1",
     "paths": {
         "/comments": {

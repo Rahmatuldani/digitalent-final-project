@@ -288,7 +288,7 @@ definitions:
     properties:
       message: {}
     type: object
-host: https://digitalent-final-project-production.up.railway.app
+host: digitalent-final-project-production.up.railway.app
 info:
   contact: {}
   description: Server API for MyGram app
