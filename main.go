@@ -25,12 +25,7 @@ func main() {
 	validate := validator.New()
 	
 	r := gin.Default()
-	r.GET("/", func(ctx *gin.Context) {
-		ctx.JSON(200, gin.H{
-			"message": "OK",
-		})
-	})
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+	r.GET("", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	baseRouter := r.Group("/api/v1")
 	routers.UserRoutes(db, validate, baseRouter)
 	routers.PhotoRoutes(db, validate, baseRouter)
