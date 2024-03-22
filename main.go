@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/Rahmatuldani/digitalent-project/config"
 	docs "github.com/Rahmatuldani/digitalent-project/docs"
 	"github.com/Rahmatuldani/digitalent-project/routers"
@@ -13,7 +15,7 @@ import (
 // @title MyGram API
 // @version 1.0
 // @description Server API for MyGram app
-// @host localhost:5000
+// @host https://digitalent-final-project-production.up.railway.app
 // @BasePath /api/v1
 
 func main() {
@@ -34,6 +36,11 @@ func main() {
 	routers.PhotoRoutes(db, validate, baseRouter)
 	routers.CommentRoutes(db, validate, baseRouter)
 	routers.SocialMediaRoutes(db, validate, baseRouter)
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "5000"
+	}
 	
-	r.Run(":5000")
+	r.Run(":"+port)
 }
